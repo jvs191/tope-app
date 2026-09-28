@@ -7,6 +7,8 @@ app rechaza automáticamente cualquier agregado que supere el presupuesto.
 **100% HTML/CSS/JavaScript nativo — sin frameworks, sin build, sin
 dependencias de terceros.** Se abre directamente en el navegador.
 
+**Demo en vivo:** https://jvs191.github.io/tope-app/
+
 ## Características
 
 - Motor de presupuesto único: escaneo por cámara, productos de muestra,
