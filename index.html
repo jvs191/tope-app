@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tope App</title>
+<meta name="description" content="Controla tu presupuesto de compra en tiempo real, escaneando cada producto.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <div class="shell">
+
+    <audio id="audio-added" src="assets/added.mp3" preload="auto"></audio>
+    <audio id="audio-finished" src="assets/finished.mp3" preload="auto"></audio>
+    <audio id="audio-insufficient" src="assets/insufficient.mp3" preload="auto"></audio>
+
+    <!-- 00 · PRESENTACIÓN -->
+    <section id="screen-welcome" class="screen" style="align-items:center;padding:24px 28px 28px;background:#FCFBF9">
+      <button class="icon-btn danger" id="btn-exit-welcome" style="position:absolute;top:16px;right:16px;background:rgba(0,0,0,.05)">⏻</button>
+      <div style="flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center">
+        <svg viewBox="0 0 220 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tope App" style="width:100%;max-height:220px;object-fit:contain">
+          <rect x="0" y="8" width="48" height="48" rx="14" fill="#1E4620"/>
+          <path d="M13 33 L22 42 L37 22" stroke="#4CAF50" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <text x="58" y="43" font-family="'Onest',sans-serif" font-weight="800" font-size="30" fill="#D6342C">Tope App</text>
+        </svg>
+      </div>
+      <h1 style="margin:0;font:700 28px/1.16 'Onest';letter-spacing:-.03em;text-align:center">Compra con control.<br>Gasta con tranquilidad.</h1>
+      <p style="margin:12px 0 0;font:400 14px/1.45 'Onest';color:var(--ink-soft);text-align:center;max-width:320px">Escanea cada producto y controla en tiempo real cuánto llevas gastado y cuánto te queda de tu presupuesto.</p>
+      <button class="btn" id="btn-welcome-start" style="margin-top:20px;width:100%">Comenzar a comprar</button>
+    </section>
+
+    <!-- 00 · PREFERENCIAS / AJUSTES -->
+    <section id="screen-prefs" class="screen" style="padding:14px 16px 12px;overflow-y:auto">
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="icon-btn mini" id="btn-prefs-back" style="display:none">←</button>
+        <h1 id="prefs-title" style="margin:0;flex:1;min-width:0;font:700 19px/1.15 'Onest';letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></h1>
+        <button class="icon-btn mini danger" id="btn-exit-prefs">⏻</button>
+      </div>
+      <p id="prefs-sub" style="margin:3px 0 0;font:400 11px/1.3 'Onest';color:var(--ink-soft)"></p>
+
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+        <div class="card tight">
+          <div style="display:flex;align-items:baseline;gap:6px">
+            <span style="flex:none;font:700 12px 'Onest'">🌐 Idioma</span>
+            <span id="prefs-locale-name" style="flex:1;min-width:0;text-align:right;font:600 11px 'Onest';color:var(--ink-softer);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
+          </div>
+          <div id="prefs-locale-options" style="display:flex;gap:6px;margin-top:8px"></div>
+        </div>
+
+        <div class="card tight">
+          <div style="display:flex;align-items:baseline;gap:6px">
+            <span style="flex:none;font:700 12px 'Onest'">💰 <span id="lbl-currency-section"></span></span>
+            <span id="prefs-currency-name" style="flex:1;min-width:0;text-align:right;font:600 11px 'Onest';color:var(--ink-softer);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
+          </div>
+          <div id="prefs-currency-options" style="display:flex;gap:6px;margin-top:8px"></div>
+        </div>
+
+        <div class="card tight">
+          <div style="display:flex;align-items:baseline;gap:6px">
+            <span style="flex:none;font:700 12px 'Onest'">🎯 <span id="lbl-alert-section"></span></span>
+            <span id="prefs-threshold-val" style="flex:1;min-width:0;text-align:right;font:600 11px 'Onest';color:var(--ink-softer)"></span>
+          </div>
+          <div id="prefs-threshold-options" style="display:flex;gap:6px;margin-top:8px"></div>
+        </div>
+
+        <div class="card tight" style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font:700 12px 'Onest'">🔊 <span id="lbl-sound-section"></span></span>
+          <button class="switch" id="switch-sound"><span class="knob"></span></button>
+        </div>
+        <div class="card tight" style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font:700 12px 'Onest'">🎁 <span id="lbl-benefits-section"></span></span>
+          <button class="switch" id="switch-benefits"><span class="knob"></span></button>
+        </div>
+      </div>
+      <button class="btn" id="btn-prefs-continue" style="margin-top:10px;width:100%;height:50px"></button>
+    </section>
+
+    <!-- 01 · INICIO -->
+    <section id="screen-start" class="screen" style="padding:18px 24px 34px;overflow-y:auto">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <svg viewBox="0 0 220 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tope App" style="height:30px;width:auto">
+          <rect x="0" y="8" width="48" height="48" rx="14" fill="#1E4620"/>
+          <path d="M13 33 L22 42 L37 22" stroke="#4CAF50" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <text x="58" y="43" font-family="'Onest',sans-serif" font-weight="800" font-size="30" fill="#D6342C">Tope App</text>
+        </svg>
+        <div style="display:flex;gap:6px">
+          <button class="pill-btn" id="btn-start-locale" style="height:34px"></button>
+          <button class="icon-btn outline" id="btn-start-settings" style="width:34px;height:34px;border:1px solid var(--border);border-radius:17px">⚙️</button>
+          <button class="icon-btn outline danger" id="btn-exit-start" style="width:34px;height:34px;border:1px solid var(--border);border-radius:17px">⏻</button>
+        </div>
+      </div>
+      <h1 id="start-hero-title" style="margin:clamp(16px,5vh,36px) 0 0;font:700 clamp(24px,min(7vh,7.5vw),36px)/1.1 'Onest';letter-spacing:-.035em"></h1>
+      <p id="start-hero-sub" style="margin:14px 0 0;font:400 16px/1.45 'Onest';color:var(--ink-soft)"></p>
+      <div style="margin:24px 0 0;display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:16px;padding:12px 16px">
+        <span id="lbl-currency-section2" style="font:500 13px 'Onest';color:var(--ink-softer)"></span>
+        <span id="start-currency-name" style="font:700 14px 'Onest'"></span>
+      </div>
+      <label id="lbl-amount" style="margin:20px 0 10px;font:600 15px 'Onest'" for="input-budget"></label>
+      <div id="budget-row" style="display:flex;align-items:center;gap:6px;background:#fff;border-radius:22px;padding:0 20px;height:clamp(64px,12vh,84px)">
+        <span id="start-currency-symbol" style="font:600 30px 'Onest';color:var(--ink-faint)"></span>
+        <input id="input-budget" inputmode="decimal" placeholder="0" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font:700 clamp(26px,9vh,40px) 'Onest';letter-spacing:-.03em;color:var(--ink)">
+      </div>
+      <div id="quick-amounts" style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"></div>
+      <div id="start-err" style="margin-top:12px;font:500 14px 'Onest';color:var(--limit-color);display:none"></div>
+      <div style="flex:1"></div>
+      <p id="start-threshold-note" style="margin:0 0 14px;font:400 13px/1.4 'Onest';color:var(--ink-softer);text-align:center"></p>
+      <button class="btn" id="btn-start-purchase" style="width:100%"></button>
+    </section>
+
+    <!-- 02 · COMPRA -->
+    <section id="screen-shop" class="screen">
+      <div style="padding:8px 20px 0;display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <span id="lbl-your-purchase" style="font:700 22px 'Onest';letter-spacing:-.02em"></span>
+        <div style="display:flex;gap:6px">
+          <button class="pill-btn" id="btn-shop-locale" style="height:40px"></button>
+          <button class="icon-btn outline" id="btn-shop-settings" style="width:40px;height:40px;border:1px solid var(--border);border-radius:12px">⚙️</button>
+          <button class="pill-btn" id="btn-shop-finish" style="height:40px"></button>
+          <button class="icon-btn outline danger" id="btn-exit-shop" style="width:40px;height:40px;border:1px solid var(--border);border-radius:12px">⏻</button>
+        </div>
+      </div>
+
+      <div class="card" id="budget-card" style="margin:12px 16px 0;border-radius:26px;padding:18px 20px 16px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span id="lbl-available" style="font:600 13px 'Onest';color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em"></span>
+          <span id="status-chip" style="display:flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:13px;font:600 12px 'Onest'"><span id="status-dot" style="width:7px;height:7px;border-radius:50%"></span><span id="status-label"></span></span>
+        </div>
+        <div id="available-amount" style="font:800 clamp(32px,9vh,48px)/1.05 'Onest';letter-spacing:-.04em;margin-top:6px;transition:color .3s"></div>
+        <div style="height:12px;border-radius:6px;background:#EEECE6;margin-top:14px;overflow:hidden"><div id="progress-bar" style="height:100%;width:0;border-radius:6px;transition:width .45s cubic-bezier(.2,.8,.2,1),background .3s"></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-top:14px">
+          <div><div id="lbl-budget" style="font:500 12px 'Onest';color:var(--ink-softer)"></div><div id="val-budget" style="font:700 17px 'Onest';margin-top:2px"></div></div>
+          <div><div id="lbl-spent" style="font:500 12px 'Onest';color:var(--ink-softer)"></div><div id="val-spent" style="font:700 17px 'Onest';margin-top:2px"></div></div>
+          <div style="text-align:right"><div id="lbl-used" style="font:500 12px 'Onest';color:var(--ink-softer)"></div><div id="val-used" style="font:700 17px 'Onest';margin-top:2px"></div></div>
+        </div>
+      </div>
+
+      <div id="status-banner" style="margin:10px 16px 0;padding:12px 14px;border-radius:16px;font:600 14px/1.35 'Onest';display:none;gap:10px;align-items:center;animation:tp-rise .3s ease">
+        <span id="status-banner-dot" style="flex:none;width:22px;height:22px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font:800 13px 'Onest'">!</span>
+        <span id="status-banner-msg"></span>
+      </div>
+
+      <div id="beneficio-shop" style="margin:0 16px;"></div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 8px">
+        <span style="font:700 16px 'Onest'"><span id="lbl-cart"></span> <span id="cart-units" style="color:var(--ink-softer);font-weight:500"></span></span>
+        <button class="btn ghost" id="btn-clear-cart" style="padding:8px 0;display:none;color:var(--limit-color);height:auto"></button>
+      </div>
+      <div id="confirm-clear" style="margin:0 16px 8px;padding:12px 14px;border-radius:16px;background:var(--ink);color:#fff;display:none;align-items:center;gap:8px;animation:tp-rise .2s ease">
+        <span id="confirm-clear-msg" style="flex:1;font:500 14px 'Onest'"></span>
+        <button class="btn ghost" id="btn-cancel-clear" style="height:36px;padding:0 12px;border-radius:10px;background:#2C2F36;color:#fff;font:600 13px 'Onest'"></button>
+        <button class="btn limit" id="btn-confirm-clear" style="height:36px;padding:0 12px;border-radius:10px;font:600 13px 'Onest'"></button>
+      </div>
+
+      <div style="flex:1;min-height:0;overflow-y:auto;padding:0 16px 120px">
+        <div id="cart-empty" style="border:1.5px dashed var(--border-pale);border-radius:22px;padding:28px 20px;text-align:center;color:var(--ink-softer);font:500 15px/1.45 'Onest'"></div>
+        <div id="cart-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+
+      <div style="position:absolute;left:0;right:0;bottom:0;padding:24px 16px 30px;background:linear-gradient(rgba(247,246,242,0),#F7F6F2 35%)">
+        <button class="btn" id="btn-open-scan" style="width:100%;height:clamp(56px,10vh,68px);display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 10px 24px -10px rgba(214,52,44,.5)">
+          📷 <span id="lbl-scan-product"></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 03 · ESCÁNER -->
+    <section id="screen-scan" class="screen" style="background:var(--scan-bg);color:#fff">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px 10px">
+        <button class="icon-btn dark" id="btn-scan-close">✕</button>
+        <span style="display:flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:18px;background:var(--scan-chip);font:600 14px 'Onest'"><span id="scan-status-dot" style="width:8px;height:8px;border-radius:50%"></span><span id="scan-available-label"></span></span>
+        <button class="icon-btn dark" id="btn-exit-scan" style="color:#F0A8A0">⏻</button>
+      </div>
+      <div style="position:relative;height:min(280px,36vh);flex:none;overflow:hidden;background:var(--scan-panel)">
+        <video id="scan-video" muted playsinline autoplay style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0"></video>
+        <div style="position:absolute;left:50%;top:50%;width:270px;height:150px;margin:-75px 0 0 -135px">
+          <div style="position:absolute;left:0;top:0;width:28px;height:28px;border-left:3px solid #fff;border-top:3px solid #fff;border-radius:10px 0 0 0"></div>
+          <div style="position:absolute;right:0;top:0;width:28px;height:28px;border-right:3px solid #fff;border-top:3px solid #fff;border-radius:0 10px 0 0"></div>
+          <div style="position:absolute;left:0;bottom:0;width:28px;height:28px;border-left:3px solid #fff;border-bottom:3px solid #fff;border-radius:0 0 0 10px"></div>
+          <div style="position:absolute;right:0;bottom:0;width:28px;height:28px;border-right:3px solid #fff;border-bottom:3px solid #fff;border-radius:0 0 10px 0"></div>
+          <div style="position:absolute;left:14px;right:14px;top:74px;height:2px;background:var(--laser);box-shadow:0 0 12px var(--laser);animation:tp-laser 2.2s ease-in-out infinite"></div>
+        </div>
+        <div id="scan-cam-msg" style="position:absolute;left:0;right:0;bottom:14px;text-align:center;font:500 13px 'Onest';color:#C9CBD1;padding:0 24px"></div>
+      </div>
+      <div style="flex:1;min-height:0;background:var(--bg);color:var(--ink);border-radius:28px 28px 0 0;margin-top:-20px;position:relative;overflow-y:auto;padding:20px 18px 34px">
+        <div id="lbl-test-products" style="font:700 15px 'Onest'"></div>
+        <div id="lbl-tap-to-sim" style="font:400 13px 'Onest';color:var(--ink-softer);margin-top:2px"></div>
+        <div id="catalog-grid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px"></div>
+        <div id="lbl-no-read" style="font:700 15px 'Onest';margin-top:22px"></div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <input id="input-code" inputmode="numeric" style="flex:1;min-width:0;height:52px;border-radius:16px;border:1px solid var(--border);background:#fff;padding:0 14px;font:500 15px 'JetBrains Mono';outline:0;color:var(--ink)">
+          <button class="btn" id="btn-submit-code" style="height:52px;padding:0 18px;width:auto"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 · RESULTADO -->
+    <section id="screen-result" class="screen" style="padding:6px 20px 32px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <button class="icon-btn" id="btn-result-back">←</button>
+        <span id="lbl-product-found" style="font:600 14px 'Onest';color:var(--ink-soft)"></span>
+        <button class="icon-btn danger" id="btn-exit-result">⏻</button>
+      </div>
+      <div class="card" style="margin-top:clamp(10px,4vh,22px);border-radius:28px;padding:clamp(12px,4vh,22px);display:flex;flex-direction:column;align-items:center;text-align:center">
+        <div id="result-tile" style="width:clamp(64px,16vh,120px);height:clamp(64px,16vh,120px);border-radius:28px;display:flex;align-items:center;justify-content:center;font:700 clamp(20px,6vh,38px) 'Onest'"></div>
+        <div id="result-name" style="font:700 clamp(17px,4vh,24px)/1.15 'Onest';letter-spacing:-.02em;margin-top:clamp(8px,2vh,18px)"></div>
+        <div id="result-code" style="font:400 12px 'JetBrains Mono';color:var(--ink-faint);margin-top:6px"></div>
+        <div id="result-price" style="font:800 clamp(20px,6vh,34px) 'Onest';letter-spacing:-.03em;margin-top:clamp(4px,1.5vh,10px)"></div>
+        <div class="stepper" style="margin-top:clamp(8px,3vh,16px)">
+          <button id="btn-result-dec">−</button>
+          <span id="result-qty">1</span>
+          <button id="btn-result-inc">+</button>
+        </div>
+      </div>
+      <div id="result-verdict" class="card" style="margin-top:12px;border-radius:18px">
+        <div id="result-verdict-title" style="font:700 15px 'Onest'"></div>
+        <div id="result-verdict-sub" style="font:500 14px 'Onest';margin-top:2px;opacity:.85"></div>
+      </div>
+      <div id="beneficio-result"></div>
+      <div style="flex:1"></div>
+      <button class="btn" id="btn-confirm-add" style="width:100%"></button>
+      <button class="btn secondary" id="btn-result-cancel" style="width:100%;margin-top:8px"></button>
+    </section>
+
+    <!-- 05 · ALERTA -->
+    <section id="screen-alert" class="screen" style="padding:20px 20px 32px;background:var(--limit-bg)">
+      <button class="icon-btn danger" id="btn-exit-alert" style="position:absolute;top:16px;right:16px;background:rgba(0,0,0,.06)">⏻</button>
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:24px;animation:tp-shake .45s ease">
+        <div style="width:clamp(64px,16vh,88px);height:clamp(64px,16vh,88px);border-radius:50%;background:var(--limit-color);color:#fff;display:flex;align-items:center;justify-content:center;font:800 clamp(28px,10vh,46px) 'Onest';box-shadow:0 0 0 12px rgba(210,58,46,.14)">!</div>
+        <div id="alert-title" style="font:800 28px/1.1 'Onest';letter-spacing:-.03em;color:var(--danger-deep);margin-top:24px"></div>
+        <div id="alert-cant-add" style="font:600 17px 'Onest';color:var(--danger-deep);margin-top:10px"></div>
+        <div id="alert-would-exceed" style="font:500 15px/1.4 'Onest';color:var(--danger-mid);margin-top:6px"></div>
+      </div>
+      <div class="card" style="margin-top:26px;border-radius:24px;padding:6px 18px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #F1EEE8"><span id="alert-cost-label" style="font:500 15px 'Onest';color:var(--ink-soft)"></span><span id="alert-cost-val" style="font:700 17px 'Onest'"></span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #F1EEE8"><span id="alert-avail-label" style="font:500 15px 'Onest';color:var(--ink-soft)"></span><span id="alert-avail-val" style="font:700 17px 'Onest'"></span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0"><span id="alert-excess-label" style="font:600 15px 'Onest';color:var(--limit-color)"></span><span id="alert-excess-val" style="font:800 19px 'Onest';color:var(--limit-color)"></span></div>
+      </div>
+      <div id="alert-not-added" style="text-align:center;font:500 13px 'Onest';color:var(--danger-mid);margin-top:12px"></div>
+      <div style="flex:1"></div>
+      <button class="btn limit" id="btn-alert-continue" style="width:100%"></button>
+      <button class="btn outline" id="btn-alert-cancel" style="width:100%;margin-top:10px;border-color:#E9B7B1;color:var(--danger-deep);background:transparent"></button>
+    </section>
+
+    <!-- 06 · NO ENCONTRADO -->
+    <section id="screen-notfound" class="screen" style="padding:20px 20px 32px;animation:tp-rise .25s ease">
+      <button class="icon-btn danger" id="btn-exit-notfound" style="position:absolute;top:16px;right:16px;background:#ECEAE4">⏻</button>
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:clamp(20px,8vh,60px)">
+        <div style="width:clamp(64px,16vh,88px);height:clamp(64px,16vh,88px);border-radius:28px;background:#ECEAE4;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;font:700 clamp(26px,9vh,40px) 'Onest'">?</div>
+        <div id="notfound-title" style="font:800 26px/1.1 'Onest';letter-spacing:-.03em;margin-top:24px"></div>
+        <div id="notfound-code" style="font:500 13px 'JetBrains Mono';color:var(--ink-softer);margin-top:12px;padding:6px 10px;background:#fff;border-radius:8px"></div>
+        <div id="notfound-hint" style="font:400 15px/1.45 'Onest';color:var(--ink-soft);margin-top:14px;max-width:280px"></div>
+      </div>
+      <div style="flex:1"></div>
+      <button class="btn" id="btn-notfound-retry" style="width:100%"></button>
+      <button class="btn outline" id="btn-notfound-manual" style="width:100%;margin-top:10px"></button>
+      <button class="btn ghost" id="btn-notfound-back" style="width:100%;margin-top:4px"></button>
+    </section>
+
+    <!-- 07 · CARGA MANUAL -->
+    <section id="screen-manual" class="screen" style="padding:6px 20px 32px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <button class="icon-btn" id="btn-manual-back">←</button>
+        <span id="lbl-manual-entry" style="font:600 14px 'Onest';color:var(--ink-soft)"></span>
+        <button class="icon-btn danger" id="btn-exit-manual">⏻</button>
+      </div>
+      <label id="lbl-name" style="font:600 14px 'Onest';margin:24px 0 8px;display:block"></label>
+      <input id="input-manual-name" style="height:56px;width:100%;border-radius:16px;border:1px solid var(--border);background:#fff;padding:0 16px;font:500 17px 'Onest';outline:0;color:var(--ink)">
+      <label id="lbl-unit-price" style="font:600 14px 'Onest';margin:16px 0 8px;display:block"></label>
+      <div style="display:flex;align-items:center;gap:4px;height:56px;border-radius:16px;border:1px solid var(--border);background:#fff;padding:0 16px">
+        <span id="manual-currency-symbol" style="font:600 17px 'Onest';color:var(--ink-faint)"></span>
+        <input id="input-manual-price" inputmode="decimal" placeholder="0" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font:600 17px 'Onest';color:var(--ink)">
+      </div>
+      <label id="lbl-quantity" style="font:600 14px 'Onest';margin:16px 0 8px;display:block"></label>
+      <div class="stepper" style="border:1px solid var(--border);background:#fff;align-self:flex-start;width:fit-content">
+        <button id="btn-manual-dec">−</button>
+        <span id="manual-qty">1</span>
+        <button id="btn-manual-inc">+</button>
+      </div>
+      <div id="manual-verdict" class="card" style="margin-top:16px;border-radius:18px;display:none">
+        <div id="manual-verdict-title" style="font:700 15px 'Onest'"></div>
+        <div id="manual-verdict-sub" style="font:500 14px 'Onest';margin-top:2px;opacity:.85"></div>
+      </div>
+      <div id="manual-err" style="margin-top:12px;font:500 14px 'Onest';color:var(--limit-color);display:none"></div>
+      <div style="flex:1"></div>
+      <button class="btn" id="btn-manual-submit" style="width:100%"></button>
+    </section>
+
+    <!-- 08 · RESUMEN -->
+    <section id="screen-summary" class="screen">
+      <button class="icon-btn danger" id="btn-exit-summary" style="position:absolute;top:16px;right:16px;background:#F1EEE8">⏻</button>
+      <div style="flex:1;min-height:0;overflow-y:auto;padding:12px 20px 20px">
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:8px 0 4px">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--ok-color);color:#fff;display:flex;align-items:center;justify-content:center;font:700 22px 'Onest'">✓</div>
+          <div id="summary-finished" style="font:800 21px/1.25 'Onest';letter-spacing:-.02em;max-width:260px"></div>
+          <div id="summary-date" style="font:400 13px 'Onest';color:var(--ink-softer)"></div>
+          <svg viewBox="0 0 220 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tope App" style="height:24px;width:auto;margin-top:8px">
+            <rect x="0" y="8" width="48" height="48" rx="14" fill="#1E4620"/>
+            <path d="M13 33 L22 42 L37 22" stroke="#4CAF50" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <text x="58" y="43" font-family="'Onest',sans-serif" font-weight="800" font-size="30" fill="#D6342C">Tope App</text>
+          </svg>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px">
+          <div class="card" style="border-radius:20px;padding:14px 16px"><div id="lbl-budget2" style="font:500 12px 'Onest';color:var(--ink-softer)"></div><div id="summary-budget" style="font:700 22px 'Onest';letter-spacing:-.02em;margin-top:4px"></div></div>
+          <div class="card" style="border-radius:20px;padding:14px 16px"><div id="lbl-total-spent" style="font:500 12px 'Onest';color:var(--ink-softer)"></div><div id="summary-total" style="font:700 22px 'Onest';letter-spacing:-.02em;margin-top:4px"></div></div>
+          <div class="card" style="background:var(--ok-bg);border-radius:20px;padding:14px 16px"><div id="lbl-remaining" style="font:500 12px 'Onest';color:var(--ok-color-deep)"></div><div id="summary-remaining" style="font:800 22px 'Onest';letter-spacing:-.02em;margin-top:4px;color:var(--ok-color)"></div></div>
+          <div class="card" style="border-radius:20px;padding:14px 16px"><div id="lbl-product-count" style="font:500 12px 'Onest';color:var(--ink-softer)"></div><div id="summary-units" style="font:700 22px 'Onest';letter-spacing:-.02em;margin-top:4px"></div></div>
+        </div>
+        <div class="card" style="border-radius:22px;padding:6px 16px;margin-top:12px">
+          <div id="summary-items"></div>
+          <div style="display:flex;justify-content:space-between;padding:14px 0 10px;font:800 17px 'Onest'"><span id="lbl-total"></span><span id="summary-total2"></span></div>
+        </div>
+        <p id="summary-thanks" style="margin:18px 6px 0;font:italic 400 13px/1.5 'Onest';color:#8A8D94;text-align:center"></p>
+        <div id="beneficio-summary"></div>
+      </div>
+      <div style="padding:10px 16px 30px;display:flex;flex-direction:column;gap:6px">
+        <button class="btn" id="btn-new-purchase" style="width:100%"></button>
+        <button class="btn ghost" id="btn-back-to-cart" style="width:100%"></button>
+      </div>
+    </section>
+
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

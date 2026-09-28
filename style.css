@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  --rojo: #D6342C;
+  --verde-oscuro: #1E4620;
+  --verde-brillante: #4CAF50;
+  --laser: #3CB371;
+  --ink: #16181D;
+  --ink-soft: #5B5E66;
+  --ink-softer: #7A7D85;
+  --ink-faint: #9A9DA4;
+  --bg: #F7F6F2;
+  --card: #FFFFFF;
+  --border: #E1DED6;
+  --border-pale: #D9D5CC;
+  --chip-bg: #F3F1EC;
+  --ok-color: #1A8F4C;
+  --ok-color-deep: #1A6E3D;
+  --ok-bg: #E4F4EA;
+  --warn-color: #D0690A;
+  --warn-bg: #FDEFDD;
+  --limit-color: #D23A2E;
+  --limit-bg: #FBE7E5;
+  --danger-deep: #8E1F16;
+  --danger-mid: #A23A30;
+  --scan-bg: #0E0F12;
+  --scan-panel: #15171B;
+  --scan-chip: #1F2127;
+  --ben-bg: #FFF8F0;
+  --ben-border: #F0E6D8;
+  --ben-title: #8A5A12;
+  --font-ui: 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  font-family: var(--font-ui);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--ink); }
+a:hover { color: var(--rojo); }
+input { font-family: inherit; }
+button { font-family: inherit; }
+
+@keyframes tp-laser { 0%, 100% { transform: translateY(-62px); } 50% { transform: translateY(62px); } }
+@keyframes tp-pop { from { opacity: 0; transform: translateY(-8px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes tp-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes tp-shake {
+  0%, 100% { transform: none; }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(3px); }
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.shell {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  padding-top: env(safe-area-inset-top);
+}
+.screen { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.screen:not(.active) { display: none; }
+
+.btn {
+  border: 0;
+  border-radius: 20px;
+  font: 700 18px var(--font-ui);
+  cursor: pointer;
+  color: #fff;
+  background: var(--rojo);
+  height: clamp(52px, 9vh, 64px);
+}
+.btn:active { transform: scale(.98); }
+.btn.secondary { background: transparent; color: var(--ink-soft); font-weight: 600; font-size: 16px; height: 52px; }
+.btn.outline { background: #fff; border: 1.5px solid var(--border-pale); color: var(--ink); }
+.btn.ghost { background: none; color: var(--ink-softer); font-weight: 500; font-size: 15px; height: 48px; }
+.btn.limit { background: var(--limit-color); }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+.icon-btn {
+  width: 44px; height: 44px; border-radius: 14px; border: 0;
+  background: #fff; color: var(--ink); font: 500 20px var(--font-ui); cursor: pointer;
+}
+.icon-btn.mini { width: 34px; height: 34px; border-radius: 10px; font-size: 14px; }
+.icon-btn.danger { color: var(--danger-deep); }
+.icon-btn.dark { background: var(--scan-chip); color: #fff; }
+
+.card { background: var(--card); border-radius: 20px; padding: 16px; }
+.card.tight { padding: 12px 14px; }
+
+.stepper { display: flex; align-items: center; background: var(--chip-bg); border-radius: 14px; }
+.stepper button { width: 44px; height: 40px; border: 0; background: none; font: 600 18px var(--font-ui); color: var(--ink); cursor: pointer; }
+.stepper span { min-width: 24px; text-align: center; font: 700 15px var(--font-ui); }
+
+.beneficio-card {
+  background: linear-gradient(135deg, var(--ben-bg), #fff);
+  border: 1px solid var(--ben-border); border-radius: 18px;
+  padding: 12px 14px; margin: 0 0 10px; animation: tp-rise .3s ease;
+}
+.beneficio-card.compacta { padding: 10px 12px; font-size: 13px; }
+.beneficio-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.beneficio-eyebrow { font: 700 10.5px var(--font-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--ben-title); }
+.beneficio-cerrar { border: 0; background: none; font-size: 15px; color: var(--ink-softer); cursor: pointer; padding: 2px; }
+.beneficio-body { display: flex; gap: 10px; align-items: flex-start; }
+.beneficio-icono { font-size: 20px; line-height: 1; }
+.beneficio-titulo { font: 700 14px var(--font-ui); }
+.beneficio-desc { font: 400 13px/1.4 var(--font-ui); color: var(--ink-soft); margin-top: 2px; }
+.beneficio-cta { border: 0; background: none; font: 700 13px var(--font-ui); color: var(--rojo); cursor: pointer; padding: 0; margin-top: 8px; }
+
+.toast {
+  position: absolute; left: 16px; right: 16px; top: 8px; z-index: 30;
+  background: #1E5631; color: #fff; border-radius: 18px; padding: 12px 14px;
+  display: flex; align-items: center; gap: 12px; animation: tp-pop .25s ease;
+  box-shadow: 0 12px 30px -10px rgba(0,0,0,.4);
+}
+.toast .check { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--laser); color: #0E3B22; display: flex; align-items: center; justify-content: center; font: 800 14px var(--font-ui); }
+.toast .msg { font: 600 14px var(--font-ui); }
+.toast .sub { font: 400 12px var(--font-ui); color: #B8BBC2; margin-top: 1px; }
+.toast .undo { height: 34px; padding: 0 10px; border-radius: 10px; border: 0; background: #2C2F36; color: #fff; font: 600 13px var(--font-ui); cursor: pointer; }
+
+.switch { position: relative; width: 44px; height: 26px; flex: none; border: 0; border-radius: 13px; cursor: pointer; padding: 0; background: var(--border-pale); }
+.switch.on { background: var(--verde-brillante); }
+.switch .knob { position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: left .15s; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+.switch.on .knob { left: 20px; }
+
+.pill-btn { height: 34px; padding: 0 10px; border-radius: 10px; border: 1.5px solid var(--border); background: #fff; font: 600 12px var(--font-ui); color: var(--ink-soft); cursor: pointer; }
+.pill-btn.active { background: var(--rojo); border-color: var(--rojo); color: #fff; }
+
+.overlay { position: absolute; inset: 0; z-index: 40; }
