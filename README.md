@@ -9,6 +9,16 @@ dependencias de terceros.** Se abre directamente en el navegador.
 
 **Demo en vivo:** https://jvs191.github.io/tope-app/
 
+## Capturas
+
+| Bienvenida | Inicio | Compra |
+|---|---|---|
+| ![Bienvenida](screenshots/01-bienvenida.png) | ![Inicio](screenshots/02-inicio.png) | ![Compra](screenshots/05-compra.png) |
+
+| Escáner | Resultado | Alerta | Resumen |
+|---|---|---|---|
+| ![Escáner](screenshots/03-escaner.png) | ![Resultado](screenshots/04-resultado.png) | ![Alerta](screenshots/06-alerta.png) | ![Resumen](screenshots/07-resumen.png) |
+
 ## Características
 
 - Motor de presupuesto único: escaneo por cámara, productos de muestra,
