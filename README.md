@@ -558,6 +558,10 @@ Consulta el archivo [`LICENSE`](LICENSE) para conocer los términos completos.
 
 # 🚀 Desarrollado por Veitia Studios
 
+<p align="center">
+  <img src="assets/brand/veitia-studios-logo.png" alt="Veitia Studios" width="160">
+</p>
+
 **Tope App** forma parte del laboratorio de productos y soluciones digitales de:
 
 ## VEITIA STUDIOS
